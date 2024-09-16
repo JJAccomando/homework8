@@ -1,0 +1,5 @@
+#Ignore IntelliJ files
+/.idea
+#Ignore Maven files
+target/maven-archiver
+target/maven-status

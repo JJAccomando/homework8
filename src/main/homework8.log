@@ -1,0 +1,10 @@
+2024-09-07 11:06:57.309 [main] INFO  com.solvd.laba.jjaccomando.Executor - Program start successful.
+2024-09-07 11:06:57.316 [main] WARN  com.solvd.laba.jjaccomando.Executor - Receiving user input.
+2024-09-07 11:07:08.171 [main] INFO  com.solvd.laba.jjaccomando.Executor - User input successful.
+2024-09-07 11:07:08.172 [main] WARN  com.solvd.laba.jjaccomando.Executor - Over weight luggage created.
+2024-09-07 11:07:08.172 [main] ERROR com.solvd.laba.jjaccomando.Executor - Failed to add passenger luggage. Error: {OversizeBagException}
+2024-09-07 11:07:08.172 [main] ERROR com.solvd.laba.jjaccomando.Executor - Failed to add passenger luggage. Error: {OverLimitException}
+2024-09-07 11:07:08.175 [main] ERROR com.solvd.laba.jjaccomando.Executor - Failed to retrieve passengers information. Error: {NullPassengerException}
+2024-09-07 11:07:08.175 [main] ERROR com.solvd.laba.jjaccomando.Executor - Failed to add passenger to flight. Error: {DoubleBookException}
+2024-09-07 11:07:08.176 [main] ERROR com.solvd.laba.jjaccomando.Executor - Failed to retrieve seat information. Error: {NullSeatException}
+2024-09-07 11:07:08.176 [main] INFO  com.solvd.laba.jjaccomando.Executor - Program success. Shutting down...
