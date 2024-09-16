@@ -1,0 +1,3 @@
+I am writing in this file as a test. I am creating this test file in order to find how many unique words there are.
+At the end of this file I will add the total of unique words.
+Number of unique words: 16
