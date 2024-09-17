@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="INFO">
     <Appenders>
-        <File name="file" fileName="C:\Users\jjacc\Laba Homework\homework6\src\main\homework8.log">
+        <File name="file" fileName="C:\Users\jjacc\Laba Homework\homework8\src\main\homework8.log">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
         </File>
     </Appenders>
