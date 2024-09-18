@@ -1,8 +1,6 @@
 package com.solvd.laba.jjaccomando;
 
-import com.solvd.laba.jjaccomando.interfaces.Luggage;
-
-public final class CustomLinkedList<T extends Luggage> {
+public final class CustomLinkedList<T extends PassengerLuggage> {
 
     //Node class to represent each element in the linked list
     private static class Node<T> {
@@ -62,6 +60,18 @@ public final class CustomLinkedList<T extends Luggage> {
         }
 
         return false;
+    }
+
+    // Method to find an object in the list
+    public T find(int targetID) {
+        Node<T> current = head;
+        while (current != null) {
+            if (current.data.getId() == targetID) {
+                return current.data;
+            }
+            current = current.next;
+        }
+        return null; // Return null if the object is not found
     }
 
     @Override

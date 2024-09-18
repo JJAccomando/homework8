@@ -1,5 +1,6 @@
 package com.solvd.laba.jjaccomando;
 
+import com.solvd.laba.jjaccomando.enums.luggagecategories.SpecialItemsLuggage;
 import com.solvd.laba.jjaccomando.interfaces.Luggage;
 import com.solvd.laba.jjaccomando.interfaces.UniqueIdInterface;
 
@@ -8,7 +9,8 @@ public final class PassengerLuggage implements UniqueIdInterface, Luggage {
     private final int id;
     private int weight;
     private static int numLuggage = 0;
-    private boolean isOverweight = false;
+    private boolean isSpecial = false, isOverweight = false;
+    private SpecialItemsLuggage luggageCategory;
 
     //PassengerLuggage Object constructor
     public PassengerLuggage(int weight) {
@@ -17,9 +19,23 @@ public final class PassengerLuggage implements UniqueIdInterface, Luggage {
         this.isOverweight = weight > 50;
     }
 
+    //PassengerLuggage Object special item constructor
+    public PassengerLuggage(int weight, SpecialItemsLuggage specialItemsLuggage) {
+        this.id = ++numLuggage;
+        this.weight = weight;
+        this.isOverweight = weight > 50;
+        this.luggageCategory = specialItemsLuggage;
+        this.isSpecial = true;
+    }
+
     //returns total number of PassengerLuggage Object's instantiated
     public static int getNumLuggage() {
         return numLuggage;
+    }
+
+    //returns the category for the special item luggage
+    public SpecialItemsLuggage getLuggageCategory() {
+        return luggageCategory;
     }
 
 
@@ -42,6 +58,12 @@ public final class PassengerLuggage implements UniqueIdInterface, Luggage {
     @Override
     public final boolean isOverweight() {
         return isOverweight;
+    }
+
+    //returns true if PassengerLuggage is a special item
+    @Override
+    public final boolean isSpecial() {
+        return isSpecial;
     }
 
 

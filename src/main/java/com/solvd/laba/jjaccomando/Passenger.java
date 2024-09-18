@@ -8,9 +8,9 @@ public final class Passenger implements UniqueIdInterface, Passengers {
 
     private final int id;
     private static int numPassengers = 0;
-    private String firstName, lastName;
+    private final String firstName, lastName;
     private int countBags = 0;
-    private CustomLinkedList<PassengerLuggage> myList = new CustomLinkedList<>();
+    private final CustomLinkedList<PassengerLuggage> myList = new CustomLinkedList<>();
     private Seat seat;
 
     //Passenger Object constructor 
@@ -44,14 +44,13 @@ public final class Passenger implements UniqueIdInterface, Passengers {
     //adds PassengerLuggage Object to Passenger Object's array of PassengerLuggage and returns true
     //does not add PassengerLuggage Object if PassengerLuggage weight is over 50lbs or Passenger PassengerLuggage array is full
     @Override
-    public final boolean addBags(PassengerLuggage bag) throws OversizeBagException, OverLimitException {
+    public final void addBags(PassengerLuggage bag) throws OversizeBagException, OverLimitException {
         if (countBags >= MAX_LUGGAGE) 
             throw new OverLimitException("Passenger has maximum number of luggage!");
         if (bag.isOverweight())
             throw new OversizeBagException("luggage cannot exceed maximum weight of 50lbs!");
         myList.add(bag);
         countBags++;
-        return true;
     }
 
     //returns total number of PassengerLuggage Object's Passenger has

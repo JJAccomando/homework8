@@ -9,6 +9,7 @@ import com.solvd.laba.jjaccomando.interfaces.UniqueIdInterface;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.HashMap;
+import java.lang.Math;
 
 
 public final class Flight implements UniqueIdInterface, Flights {
@@ -18,23 +19,45 @@ public final class Flight implements UniqueIdInterface, Flights {
     public Map<Passenger, Seat> mapPassengerKey = new HashMap<>();
     private final int id;
     public static int numFlights = 0;
-    private final String flightNumber, departureLocation, arrivalLocation;
+    private final String flightNumber;
     private final PlaneType planeType;
+    private final Airport arrivalLocation, departureLocation;
     private final AirplaneBase plane;
     private final Passenger[] passengers;
+    private final double flightDistance;
     private int seatsAvailable, firstClassSeatsCount = 0, businessClassSeatsCount = 0, economyClassSeatsCount = 0, numPassengers = 0;
 
     //Flight Object constructor 
-    public Flight(AirplaneBase myPlane, String departureLocation, String arrivalLocation) {
+    public Flight(AirplaneBase myPlane, Airport departureLocation, Airport arrivalLocation) {
         flightList.add(this);
         this.plane = myPlane;
         this.planeType = myPlane.getPlaneType();
-        this.seatsAvailable = planeType.TOTAL_SEATS;
-        this.flightNumber = planeType.CLASSIFICATION + plane.getId();
+        this.seatsAvailable = planeType.totalSeats;
+        this.flightNumber = planeType.classification + plane.getId();
         this.departureLocation = departureLocation;
         this.arrivalLocation = arrivalLocation;
-        this.passengers = new Passenger[planeType.TOTAL_SEATS];
+        this.passengers = new Passenger[planeType.totalSeats];
         this.id = ++numFlights;
+        this.flightDistance = getDistance(departureLocation.latitude, departureLocation.longitude, arrivalLocation.latitude, arrivalLocation.longitude);
+    }
+
+    //returns distance from departureLocation to arrivalLocation
+    private static double getDistance(double latitude1, double longitude1, double latitude2, double longitude2) {
+        double radiusEarthMiles = 3958.8;
+
+        double latitude1ToRadians = Math.toRadians(latitude1);
+        double latitude2ToRadians = Math.toRadians(latitude2);
+        double latitudeDifferenceToRadians = Math.toRadians(latitude2 - latitude1);
+        double longitudeDifferenceToRadians = Math.toRadians(longitude2 - longitude1);
+
+        double haversineFormula = Math.pow(Math.sin(latitudeDifferenceToRadians / 2), 2) +
+                                  Math.pow(Math.sin(longitudeDifferenceToRadians / 2), 2) *
+                                  Math.cos(latitude1ToRadians) *
+                                  Math.cos(latitude2ToRadians);
+
+        double inverseHaversineFormula = 2 * Math.asin(Math.sqrt(haversineFormula));
+
+        return radiusEarthMiles * inverseHaversineFormula;
     }
 
     //returns current number of Flight Objects instantiated
@@ -53,21 +76,21 @@ public final class Flight implements UniqueIdInterface, Flights {
     private final boolean handleSeatAssignment(Passenger person, SeatType seatType) {
         switch (seatType) {
             case FIRST_CLASS:
-                if (firstClassSeatsCount < planeType.SEATS_IN_FIRST) {
+                if (firstClassSeatsCount < planeType.seatsInFirst) {
                     plane.assignSeat(person, firstClassSeatsCount++, seatType);
                     return true;
                 }
                 break;
 
             case BUSINESS_CLASS:
-                if (businessClassSeatsCount < planeType.SEATS_IN_BUSINESS) {
+                if (businessClassSeatsCount < planeType.seatsInBusiness) {
                     plane.assignSeat(person, businessClassSeatsCount++, seatType);
                     return true;
                 }
                 break;
 
             case ECONOMY_CLASS:
-                if (economyClassSeatsCount < planeType.SEATS_IN_ECON) {
+                if (economyClassSeatsCount < planeType.seatsInEcon) {
                     plane.assignSeat(person, economyClassSeatsCount++, seatType);
                     return true;
                 }
@@ -94,11 +117,11 @@ public final class Flight implements UniqueIdInterface, Flights {
     public final boolean getSeatsAvailable(SeatType seatType) {
         switch (seatType) {
             case FIRST_CLASS:
-                return firstClassSeatsCount < planeType.SEATS_IN_FIRST;
+                return firstClassSeatsCount < planeType.seatsInFirst;
             case BUSINESS_CLASS:
-                return businessClassSeatsCount < planeType.SEATS_IN_BUSINESS;
+                return businessClassSeatsCount < planeType.seatsInBusiness;
             case ECONOMY_CLASS:
-                return economyClassSeatsCount < planeType.SEATS_IN_ECON;
+                return economyClassSeatsCount < planeType.seatsInEcon;
             default:
                 break;
         }
@@ -142,12 +165,10 @@ public final class Flight implements UniqueIdInterface, Flights {
     //returns Flight Object general information as a String
     @Override
     public final String flightInfo() {
-        String flightNumber = "Flight#: " + this.flightNumber;
-        String departingFrom = "Departing from: " + departureLocation;
-        String arrivingTo = "Arriving to: " + arrivalLocation;
-        String passengers = "Number of passengers: " + numPassengers;
-        String planeInfo = String.format("Plane: %1$s %2$s", planeType.COMPANY, planeType.CLASSIFICATION);
-        return String.format("%1$s\n%2$s\n%3$s\n%4$s\n%5$s", flightNumber, departingFrom, arrivingTo, passengers, planeInfo);
+        return String.format(
+                "Flight#: %s\nDeparting from: %s\nArriving to: %s\nNumber of passengers: %d\nPlane: %s %s\nFlight distance: %.2f mi",
+                flightNumber, departureLocation, arrivalLocation, numPassengers, planeType.company, planeType.classification, flightDistance
+        );
     }
 
 

@@ -11,7 +11,7 @@ public interface Passengers {
 
     String getFirstName();
     String getLastName();
-    boolean addBags(PassengerLuggage bag) throws OversizeBagException, OverLimitException;
+    void addBags(PassengerLuggage bag) throws OversizeBagException, OverLimitException;
     int getNumBags();
     void setSeatNum(Seat seat) throws DuplicateBookingException;
     Seat getSeat() throws EmptySeatException;

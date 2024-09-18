@@ -14,9 +14,9 @@ public final class AirbusA320 extends AirplaneBase {
     public AirbusA320() {
         ++numA320;
         this.id = getTotalPlanes();
-        this.firstClassSeats = new Seat[PLANE_TYPE.SEATS_IN_FIRST];
-        this.businessClassSeats = new Seat[PLANE_TYPE.SEATS_IN_BUSINESS];
-        this.economyClassSeats = new Seat[PLANE_TYPE.SEATS_IN_ECON];
+        this.firstClassSeats = new Seat[PLANE_TYPE.seatsInFirst];
+        this.businessClassSeats = new Seat[PLANE_TYPE.seatsInBusiness];
+        this.economyClassSeats = new Seat[PLANE_TYPE.seatsInEcon];
         this.populateSeats();
         addToMap(this);
     }
@@ -27,16 +27,16 @@ public final class AirbusA320 extends AirplaneBase {
     //Seat number is based on rows and Seat letter is based on columns
     //number of rows and columns is based on PlaneType
     private final void populateSeats() {
-        int totalRowFirst = (PLANE_TYPE.SEATS_IN_FIRST / PLANE_TYPE.NUM_COLUMNS_FIRST);
-        int totalRowBus = (PLANE_TYPE.SEATS_IN_BUSINESS / PLANE_TYPE.NUM_COLUMNS_BUSINESS);
-        int totalRowEcon = (PLANE_TYPE.SEATS_IN_ECON / PLANE_TYPE.NUM_COLUMNS_ECON);
+        int totalRowFirst = (PLANE_TYPE.seatsInFirst / PLANE_TYPE.numColumnsFirst);
+        int totalRowBus = (PLANE_TYPE.seatsInBusiness / PLANE_TYPE.numColumnsBusiness);
+        int totalRowEcon = (PLANE_TYPE.seatsInEcon / PLANE_TYPE.numColumnsEcon);
 
         populateSeatsHelper(firstClassSeats, totalRowFirst,
-                PLANE_TYPE.NUM_COLUMNS_FIRST, 1);
+                PLANE_TYPE.numColumnsFirst, 1);
         populateSeatsHelper(businessClassSeats, totalRowBus,
-                PLANE_TYPE.NUM_COLUMNS_BUSINESS, totalRowFirst + 1);
+                PLANE_TYPE.numColumnsBusiness, totalRowFirst + 1);
         populateSeatsHelper(economyClassSeats, totalRowEcon,
-                PLANE_TYPE.NUM_COLUMNS_ECON, totalRowFirst + totalRowBus + 1);
+                PLANE_TYPE.numColumnsEcon, totalRowFirst + totalRowBus + 1);
     }
 
     //helper method for populateSeats method
@@ -128,7 +128,7 @@ public final class AirbusA320 extends AirplaneBase {
     //returns a String of an AirbusA320 Object as the Object's "COMPANY", "CLASSIFICATION", and ID#
     @Override
     public final String toString() {
-        return String.format("%1$s %2$s\nPlane ID#: %3$d", PLANE_TYPE.COMPANY, PLANE_TYPE.CLASSIFICATION, id);
+        return String.format("%1$s %2$s\nPlane ID#: %3$d", PLANE_TYPE.company, PLANE_TYPE.classification, id);
     }
 
     //compares 2 AirbusA320 Objects by comparing their Object's hashcode
