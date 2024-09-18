@@ -1,5 +1,6 @@
 package com.solvd.laba.jjaccomando;
 
+import com.solvd.laba.jjaccomando.enums.SeatType;
 import com.solvd.laba.jjaccomando.exceptions.EmptyPassengerException;
 import com.solvd.laba.jjaccomando.interfaces.Seats;
 import com.solvd.laba.jjaccomando.interfaces.UniqueIdInterface;
@@ -12,17 +13,23 @@ public final class Seat implements UniqueIdInterface, Seats {
     private static int numTotalSeats = 0;
     private Passenger passenger;
     private boolean available = true;
+    private final SeatType seatType;
 
     //Seat Object constructor
-    public Seat(int seatNum, char seatLetter) {
+    public Seat(int seatNum, char seatLetter, SeatType seatType) {
         SEAT_NUM = seatNum;
         SEAT_LETTER = seatLetter;
+        this.seatType = seatType;
         id = ++numTotalSeats;
     }
 
     //returns total number of Seat Objects instantiated in program
     public final int getNumTotalSeats() {
         return numTotalSeats;
+    }
+
+    public final SeatType getSeatType() {
+        return seatType;
     }
 
 

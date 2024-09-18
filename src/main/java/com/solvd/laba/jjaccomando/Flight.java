@@ -4,9 +4,13 @@ import com.solvd.laba.jjaccomando.exceptions.DuplicateBookingException;
 import com.solvd.laba.jjaccomando.exceptions.EmptySeatException;
 import com.solvd.laba.jjaccomando.enums.*;
 import com.solvd.laba.jjaccomando.exceptions.EmptyPassengerException;
+import com.solvd.laba.jjaccomando.interfaces.DuplicateChecker;
+import com.solvd.laba.jjaccomando.interfaces.ApplyFilter;
 import com.solvd.laba.jjaccomando.interfaces.Flights;
 import com.solvd.laba.jjaccomando.interfaces.UniqueIdInterface;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.lang.Math;
@@ -102,6 +106,16 @@ public final class Flight implements UniqueIdInterface, Flights {
         return false;
     }
 
+    public Passenger[] filterPassengers(ApplyFilter<Passenger> filter) {
+        List<Passenger> filteredPassengers = new ArrayList<>();
+        for (Passenger person : passengers) {
+            if (filter.filter(person)) {
+                filteredPassengers.add(person);
+            }
+        }
+        return filteredPassengers.toArray(new Passenger[0]);
+    }
+
 
 
     ////////////// Flights Overrides /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -131,10 +145,19 @@ public final class Flight implements UniqueIdInterface, Flights {
     //adds a Passenger to the Flight Object Passenger array and assigns Passenger a Seat based on SeatType
     @Override
     public final boolean bookSeat(Passenger person, SeatType seatType) throws DuplicateBookingException {
-        for (Passenger passenger : passengers) {
-            if (person.equals(passenger))
-                throw new DuplicateBookingException("Passenger has already booked a seat!");
+        DuplicateChecker<Passenger> checker = (p, pa) -> {
+            for (Passenger passenger : pa) {
+                if (p.equals(passenger)) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        if (checker.check(person, passengers)) {
+            throw new DuplicateBookingException("Passenger has already booked a seat!");
         }
+
         if (handleSeatAssignment(person, seatType)) {
             try {
                 person.getSeat();

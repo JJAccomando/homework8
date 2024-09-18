@@ -31,20 +31,20 @@ public final class AirbusA380 extends AirplaneBase {
         int totalRowBus = (PLANE_TYPE.seatsInBusiness / PLANE_TYPE.numColumnsBusiness);
         int totalRowEcon = (PLANE_TYPE.seatsInEcon / PLANE_TYPE.numColumnsEcon);
 
-        populateSeatsHelper(firstClassSeats, totalRowFirst,
+        populateSeatsHelper(SeatType.FIRST_CLASS, firstClassSeats, totalRowFirst,
                 PLANE_TYPE.numColumnsFirst, 1);
-        populateSeatsHelper(businessClassSeats, totalRowBus,
+        populateSeatsHelper(SeatType.BUSINESS_CLASS, businessClassSeats, totalRowBus,
                 PLANE_TYPE.numColumnsBusiness, totalRowFirst + 1);
-        populateSeatsHelper(economyClassSeats, totalRowEcon,
+        populateSeatsHelper(SeatType.ECONOMY_CLASS, economyClassSeats, totalRowEcon,
                 PLANE_TYPE.numColumnsEcon, totalRowFirst + totalRowBus + 1);
     }
 
     //helper method for populateSeats method
-    private final void populateSeatsHelper (Seat[] seatArray, int numRows, int numColumns, int startRow) {
+    private final void populateSeatsHelper (SeatType seatType, Seat[] seatArray, int numRows, int numColumns, int startRow) {
         for (int row = startRow; row <= numRows; row++) {
             char seatLetter = 'A';
             for (int i = 0; i < numColumns; i++) {
-                Seat seat = new Seat(row, seatLetter);
+                Seat seat = new Seat(row, seatLetter, seatType);
                 for (int j = 0; j < seatArray.length; j++) {
                     if (seatArray[j] == null) {
                         seatArray[j] = seat;
