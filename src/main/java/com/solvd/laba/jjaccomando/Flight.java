@@ -4,16 +4,15 @@ import com.solvd.laba.jjaccomando.exceptions.DuplicateBookingException;
 import com.solvd.laba.jjaccomando.exceptions.EmptySeatException;
 import com.solvd.laba.jjaccomando.enums.*;
 import com.solvd.laba.jjaccomando.exceptions.EmptyPassengerException;
-import com.solvd.laba.jjaccomando.interfaces.DuplicateChecker;
-import com.solvd.laba.jjaccomando.interfaces.ApplyFilter;
 import com.solvd.laba.jjaccomando.interfaces.Flights;
 import com.solvd.laba.jjaccomando.interfaces.UniqueIdInterface;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 import java.lang.Math;
+
+import com.solvd.laba.jjaccomando.interfaces.DuplicateChecker;
+import com.solvd.laba.jjaccomando.interfaces.ApplyFilter;
+
+import java.util.function.Supplier;
 
 
 public final class Flight implements UniqueIdInterface, Flights {
@@ -37,7 +36,8 @@ public final class Flight implements UniqueIdInterface, Flights {
         this.plane = myPlane;
         this.planeType = myPlane.getPlaneType();
         this.seatsAvailable = planeType.totalSeats;
-        this.flightNumber = planeType.classification + plane.getId();
+        Supplier<Integer> randomNum = () -> Math.abs(new Random().nextInt(1000));
+        this.flightNumber = planeType.abbreviation + plane.getId() + randomNum.get();
         this.departureLocation = departureLocation;
         this.arrivalLocation = arrivalLocation;
         this.passengers = new Passenger[planeType.totalSeats];
@@ -81,22 +81,19 @@ public final class Flight implements UniqueIdInterface, Flights {
         switch (seatType) {
             case FIRST_CLASS:
                 if (firstClassSeatsCount < planeType.seatsInFirst) {
-                    plane.assignSeat(person, firstClassSeatsCount++, seatType);
-                    return true;
+                    return plane.assignSeat(person, firstClassSeatsCount++, seatType);
                 }
                 break;
 
             case BUSINESS_CLASS:
                 if (businessClassSeatsCount < planeType.seatsInBusiness) {
-                    plane.assignSeat(person, businessClassSeatsCount++, seatType);
-                    return true;
+                    return plane.assignSeat(person, businessClassSeatsCount++, seatType);
                 }
                 break;
 
             case ECONOMY_CLASS:
                 if (economyClassSeatsCount < planeType.seatsInEcon) {
-                    plane.assignSeat(person, economyClassSeatsCount++, seatType);
-                    return true;
+                    return plane.assignSeat(person, economyClassSeatsCount++, seatType);
                 }
                 break;
 
