@@ -1,19 +1,19 @@
-1. What is lambda?
+1. What is Stream?
 
-In Java, a Lambda function allows you to write more readable code, treating a function as a method argument, as a way to represent an instance of a functional interface. Instead of needing to use an object and then a method implementation for that object, we can bypass the need of creating the object and instead just pass in the implementation.
+In java, a Stream is a sequence of data that allows for functions to perform computations on the data in a declarative and functional manner.
 
-2. How to create lambda in Java?
+2. What stream operations do you know? Why do we need them? 
 
-To create a lambda expression in Java, first you need to use a functional interface, either one you create or one of Java's built-in functional interfaces. Then instead of having a class that overrides the method with its own implementation, you can basically create a variable as an instance of the functional interface, and then use a lambda expression to represent the implementation. This is basically like having an object of a class that implements the functional interface, but without having to write the class.
+Streams have various operations that can be categorized into either non-terminal operations, or terminal operations. Non-terminal operations are operations that transform streams into other streams. Some of these include, filter, map, and sorted. Terminal operations are operations that return a non-stream result such as a primitive, a collection, or even no value. Some terminal operations are forEach, count, collect, and reduce. Having all of these operations available allows programs to more easily traverse through and manipulate data especially when working with collections. The code can be more readable, more efficient, and more functional. 
 
-3. What lambda functions do you know? Where are they located? 
+3. What is reflection?
 
-Java offers many built-in functional interfaces, most of which are located in the java.util.function library. Predicate<T> is a functional interface that uses generic type T and returns a boolean. Function<T, R> is a useful functional interface that accepts an argument of one type, and will return another type for the result. Runnable is another interface that can be used to execute a task without taking in any parameters which is located in the java.lang library.
+Reflection in Java is a tool that programmers can use to inspect and manipulate a program's structure and behavior at runtime. Using reflection, information about a program’s classes, including its methods, fields, and constructors can be inspected and modified dynamically. 
 
-4. What is enum?
+4. How to call the method using reflection?
 
-In Java, an enum is a data type that is used to represent a group of constants and provide a way to define and use these constants in a type-safe way. Enums can also have methods, constructors, and instance variables. 
+When using reflection in Java, you can call a method by first obtaining the Class object that represents the class containing the method to be called. Then you can obtain the Method object using getMethod() or getDeclaredMethod() to create the object representing the method you want to call. Finally, using the invoke method, you can use this method on the method object.
 
-5. What enum types do you know?
+5. How to create objects from reflection?
 
-Java has several built-in enum types. DayOfWeek is an enum for representing days of the week. Following the theme of DayOfWeek, Java also offers a Month enum for representing the different months. There is also an enum for various currencies called Currency, and also an enum called ChronoUnit for representing units of time, such as days, hours, and minutes. All of these enums also have several methods and instance variables that make them powerful tools in Java. 
+First, to create objects using reflection, you must dynamically load the Class object using Class.forName() to create a container representing the class. Second, you need to create an instance of the class by using getDeclaredConstructor() to get the default constructor of the class, and then using newInstance() to create an instance of the class with the constructor.
