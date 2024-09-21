@@ -4,132 +4,119 @@ import com.solvd.laba.jjaccomando.enums.Airport;
 import com.solvd.laba.jjaccomando.enums.SeatType;
 import com.solvd.laba.jjaccomando.enums.luggagecategories.SpecialItemsLuggage;
 import com.solvd.laba.jjaccomando.exceptions.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
 
-import com.solvd.laba.jjaccomando.interfaces.PrintInfo;
+import java.lang.reflect.*;
+import java.util.*;
 
-import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static java.lang.System.out;
 
 public class Executor {
 
-    public static Logger logger = LogManager.getLogger();
+    //public static Logger logger = LogManager.getLogger();
 
-    public static void main(String[] args) throws EmptyBagException, OversizeBagException, OverLimitException, DuplicateBookingException {
+    public static void main(String[] args) throws OversizeBagException, OverLimitException, DuplicateBookingException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException {
+        Class<?> c = Class.forName("com.solvd.laba.jjaccomando.Passenger");
+        Field[] fields = c.getDeclaredFields();
+        Method[] methods = c.getDeclaredMethods();
+        Constructor<?>[] constructors = c.getConstructors();
+        out.println("Class Fields:");
+        for (Field f : fields) {
+            out.print(Modifier.toString(f.getModifiers()) + " ");
+            out.println(f.getType() + " " + f.getName());
+        }
+        out.println();
+
+        out.println("Class Constructors");
+        for (Constructor<?> cons : constructors) {
+            out.print(cons.getName() + " ");
+            out.println(Arrays.toString(cons.getParameterTypes()));
+        }
+        out.println();
+
+        out.println("Class Methods");
+        for (Method m : methods) {
+            out.print(Modifier.toString(m.getModifiers()) + " ");
+            out.print(m.getReturnType() + " ");
+            out.print(m.getName() + " ");
+            out.println(Arrays.toString(m.getParameterTypes()));
+        }
+
+
+        Constructor<?> constructor = c.getConstructor(String.class, String.class, int.class);
+        Object instance = constructor.newInstance("JJ", "A", 55);
+        Method method = c.getMethod("getAge");
+
+        out.println("\nMethod call using reflection: " + method.invoke(instance));
+        out.println();
+
         Boeing737 plane1 = new Boeing737();
         AirbusA320 plane2 = new AirbusA320();
         Boeing737 plane3 = new Boeing737();
+        AirbusA380 plane4 = new AirbusA380();
+        AirbusA380 plane5 = new AirbusA380();
+        AirbusA380 plane6 = new AirbusA380();
+        AirbusA380 plane7 = new AirbusA380();
+        AirbusA380 plane8 = new AirbusA380();
+        AirbusA380 plane9 = new AirbusA380();
+
         Flight flight1 = new Flight(plane1, Airport.LAX, Airport.HNL);
-        Passenger person1 = new Passenger("JJ", "Accomando");
-        Passenger person2 = new Passenger("John", "Smith");
-        Passenger person3 = new Passenger("Jane", "Doe");
-        Passenger person4 = new Passenger("Spongebob", "Squarepants");
+        Flight flight2 = new Flight(plane2, Airport.JFK, Airport.LHR);
+        Flight flight3 = new Flight(plane3, Airport.DFW, Airport.CDG);
+        Flight flight4 = new Flight(plane4, Airport.HND, Airport.DXB);
+        Flight flight5 = new Flight(plane5, Airport.LAX, Airport.ZRH);
+        Flight flight6 = new Flight(plane6, Airport.LAX, Airport.DXB);
+        Flight flight7 = new Flight(plane7, Airport.LAX, Airport.CDG);
+        Flight flight8 = new Flight(plane8, Airport.LAX, Airport.LHR);
+        Flight flight9 = new Flight(plane9, Airport.LAX, Airport.FRA);
+
+        double flightsTotalDistance = Double.parseDouble(String.format("%.2f", Flight.mapFlights.values().stream()
+                .mapToDouble(Flight::getFlightDistance)
+                .reduce(0,
+                        (a, b) -> a + b)));
+
+        System.out.println(flightsTotalDistance + " Miles\n");
+
+        List<Flight> filteredFlights = Flight.filteredFlights(flight -> flight.getDepartureLocation() == Airport.LAX);
+        filteredFlights.stream()
+                .forEach(flight -> System.out.println(flight.flightInfo() + "\n"));
+
+        Passenger person1 = new Passenger("Julius", "Caesar", 55);
+        Passenger person2 = new Passenger("John", "Smith", 43);
+        Passenger person3 = new Passenger("Jane", "Doe", 35);
+        Passenger person4 = new Passenger("Spongebob", "Squarepants", 33);
+        flight1.bookSeat(person1, SeatType.FIRST_CLASS);
+        flight2.bookSeat(person2, SeatType.ECONOMY_CLASS);
+        flight3.bookSeat(person3, SeatType.BUSINESS_CLASS);
+        flight1.bookSeat(person4, SeatType.BUSINESS_CLASS);
+
         PassengerLuggage bag = new PassengerLuggage(40, SpecialItemsLuggage.HUNTING_EQUIPMENT);
         PassengerLuggage bag2 = new PassengerLuggage(25);
         PassengerLuggage bag3 = new PassengerLuggage(55);
         person1.addBags(bag);
-        PrintInfo<Passenger> passengerName = (p) -> p.getFirstName() + " " + p.getLastName();
-        PrintInfo<PassengerLuggage> luggageInfo = (luggageItem) -> {
-            Function<PassengerLuggage, String> specialItemCheck = (luggage) -> {
-                if (luggage.isSpecial()) {
-                    return luggage.toString() + "\n" +
-                            luggage.getLuggageCategory() + "\n" +
-                            luggage.getLuggageCategory().getCategory() + "\n" +
-                            luggage.getLuggageCategory().getCategoryDescription();
-                }
-                else
-                    return luggage.toString();
-            };
-            return specialItemCheck.apply(luggageItem);
-        };
-        System.out.println(luggageInfo.getInfo(bag));
+
+        Map<Class<? extends AirplaneBase>, List<AirplaneBase>> mapByPlaneType1 =
+                AirplaneBase.airplaneSet
+                        .stream()
+                        .collect(
+                        Collectors.groupingBy(AirplaneBase::getClass));
+        mapByPlaneType1.get(AirbusA380.class)
+                .stream()
+                .forEach(plane -> System.out.println(plane.toString()));
+
         System.out.println();
 
-        System.out.println(luggageInfo.getInfo(bag2));
-        System.out.println();
+        Map<Class<? extends AirplaneBase>, Set<AirplaneBase>> mapByPlaneType2 =
+                AirplaneBase.airplaneSet
+                        .stream()
+                        .collect(
+                        Collectors.groupingBy(AirplaneBase::getClass, Collectors.toSet()));
 
-        System.out.println(luggageInfo.getInfo(bag3));
-        System.out.println();
-
-        System.out.println(flight1.flightInfo());
-        System.out.println();
-
-        flight1.bookSeat(person1, SeatType.FIRST_CLASS);
-        flight1.bookSeat(person2, SeatType.FIRST_CLASS);
-        flight1.bookSeat(person3, SeatType.ECONOMY_CLASS);
-        flight1.bookSeat(person4, SeatType.BUSINESS_CLASS);
-
-        Passenger[] firstClassPassengers = flight1.filterPassengers(p -> {
-            Seat seat = flight1.mapPassengerKey.get(p);
-            return seat != null && seat.getSeatType() == SeatType.FIRST_CLASS;
-        });
-
-        Passenger[] economyClassPassengers = flight1.filterPassengers(p -> {
-            Seat seat = flight1.mapPassengerKey.get(p);
-            return seat != null && seat.getSeatType() == SeatType.ECONOMY_CLASS;
-        });
-
-        for (Passenger passenger : firstClassPassengers) {
-            System.out.println(passenger.getFirstName() + " " + passenger.getLastName());
-        }
-        System.out.println();
-        for (Passenger passenger : economyClassPassengers) {
-            System.out.println(passenger.getFirstName() + " " + passenger.getLastName());
-        }
-        System.out.println();
-
-        PrintInfo<Flight> flightInfo = (Flight::flightInfo);
-        System.out.println(flightInfo.getInfo(flight1));
-        System.out.println();
-
-        BiPredicate<Flight, Passenger> hasPassenger = (f, p) -> {
-            try {
-                for (Passenger person : f.getPassengers()) {
-                    if (person.equals(p)) {
-                        return true;
-                    }
-                }
-                return false;
-            } catch (EmptyPassengerException empty) {
-                return false;
-            }
-        };
-
-        if(hasPassenger.test(flight1, person1)) {
-            System.out.println(passengerName.getInfo(person1));
-        } else
-            System.out.println(passengerName.getInfo(person1) + " is not on this flight!");
-        System.out.println();
-
-        BiFunction<Set<AirplaneBase>, Class<? extends AirplaneBase>, Map<Integer, AirplaneBase>> mapByPlaneType = (s, a) -> {
-            Map<Integer, AirplaneBase> planeMap = new HashMap<>();
-            for (AirplaneBase plane : s) {
-                if (a.isInstance(plane)) {
-                    planeMap.put(plane.getId(), plane);
-                }
-            }
-            return planeMap;
-        };
-
-        Map<Integer, AirplaneBase> boeing737Map = mapByPlaneType.apply(AirplaneBase.airplaneSet, Boeing737.class);
-        Map<Integer, AirplaneBase> airbusA320Map = mapByPlaneType.apply(AirplaneBase.airplaneSet, AirbusA320.class);
-
-        Consumer<Map<Integer, AirplaneBase>> printMap = (m) -> {
-            for (AirplaneBase plane : m.values()) {
-                System.out.println(plane);
-            }
-        };
-
-        printMap.accept(boeing737Map);
-        System.out.println();
-
-        printMap.accept(airbusA320Map);
+        Set<AirplaneBase> airbusA380Set = AirplaneBase.getFilteredAirplaneSet(p -> p instanceof AirbusA380);
+        airbusA380Set.stream()
+                .forEach(plane -> System.out.println(plane.toString()));
     }
-
 }

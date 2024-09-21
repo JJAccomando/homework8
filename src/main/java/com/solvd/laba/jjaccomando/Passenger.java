@@ -6,18 +6,23 @@ import com.solvd.laba.jjaccomando.interfaces.UniqueIdInterface;
 
 public final class Passenger implements UniqueIdInterface, Passengers {
 
-    private final int id;
+    private final int id, age;
     private static int numPassengers = 0;
     private final String firstName, lastName;
     private int countBags = 0;
     private final CustomLinkedList<PassengerLuggage> myList = new CustomLinkedList<>();
-    private Seat seat;
+    public Seat seat;
 
     //Passenger Object constructor 
-    public Passenger(String firstName, String lastName) {
+    public Passenger(String firstName, String lastName, int age) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.age = age;
         this.id = ++numPassengers;
+    }
+
+    public int getAge() {
+        return age;
     }
 
     //returns current number of Passenger Objects instantiated
@@ -101,7 +106,7 @@ public final class Passenger implements UniqueIdInterface, Passengers {
     //returns a String of a Passenger Object as that Object's "firstName", "lastName",  and ID#
     @Override
     public final String toString() {
-        return String.format("Passenger %1$s %2$s\nPassenger#: %3$d", firstName, lastName, id);
+        return String.format("Passenger: %1$s %2$s Passenger ID#: %3$d", firstName, lastName, id);
     }
 
     //compares 2 Passenger Objects by comparing their Object's hashcode

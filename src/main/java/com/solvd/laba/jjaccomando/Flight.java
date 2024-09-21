@@ -12,32 +12,33 @@ import java.lang.Math;
 import com.solvd.laba.jjaccomando.interfaces.DuplicateChecker;
 import com.solvd.laba.jjaccomando.interfaces.ApplyFilter;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
-
+import java.util.stream.Collectors;
 
 public final class Flight implements UniqueIdInterface, Flights {
 
-    public static LinkedList<Flight> flightList = new LinkedList<>();
     public Map<Seat, Passenger> mapSeatKey = new HashMap<>();
     public Map<Passenger, Seat> mapPassengerKey = new HashMap<>();
+    public static Map<String, Flight> mapFlights = new HashMap<>();
     private final int id;
     public static int numFlights = 0;
     private final String flightNumber;
     private final PlaneType planeType;
     private final Airport arrivalLocation, departureLocation;
     private final AirplaneBase plane;
-    private final Passenger[] passengers;
+    public final Passenger[] passengers;
     private final double flightDistance;
     private int seatsAvailable, firstClassSeatsCount = 0, businessClassSeatsCount = 0, economyClassSeatsCount = 0, numPassengers = 0;
 
     //Flight Object constructor 
     public Flight(AirplaneBase myPlane, Airport departureLocation, Airport arrivalLocation) {
-        flightList.add(this);
         this.plane = myPlane;
         this.planeType = myPlane.getPlaneType();
         this.seatsAvailable = planeType.totalSeats;
         Supplier<Integer> randomNum = () -> Math.abs(new Random().nextInt(1000));
         this.flightNumber = planeType.abbreviation + plane.getId() + randomNum.get();
+        mapFlights.put(this.flightNumber, this);
         this.departureLocation = departureLocation;
         this.arrivalLocation = arrivalLocation;
         this.passengers = new Passenger[planeType.totalSeats];
@@ -61,7 +62,9 @@ public final class Flight implements UniqueIdInterface, Flights {
 
         double inverseHaversineFormula = 2 * Math.asin(Math.sqrt(haversineFormula));
 
-        return radiusEarthMiles * inverseHaversineFormula;
+        double unformatted = radiusEarthMiles * inverseHaversineFormula;
+
+        return Double.parseDouble(String.format("%.2f", unformatted));
     }
 
     //returns current number of Flight Objects instantiated
@@ -69,15 +72,32 @@ public final class Flight implements UniqueIdInterface, Flights {
         return numFlights;
     }
 
+    public static Map<Flight, List<String>> getPassengerNamesByFlight() {
+        Map<Flight, List<Passenger>> PassengerListByFlight = mapFlights.values().stream()
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        flight -> flight.filterPassengers(
+                                        passenger -> passenger != null)
+                        ));
+        return PassengerListByFlight.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> entry.getValue().stream()
+                                .map(passenger -> passenger.toString() +
+                                        " " + passenger.seat.toString())
+                                .collect(Collectors.toList())
+                ));
+    }
+
     //adds Passenger to Flight Object by storing the Passenger in the Flight Object's Passenger array
     //this method is called inside bookSeat method which already checks for Seat availability
     //bookSeat method will only call this method if a Seat is available so a Passenger will always be able to be added to the array when this method is called
-    private final void addPassenger(Passenger person) {
+    private void addPassenger(Passenger person) {
         passengers[numPassengers++] = person;
     }
 
     //helper method for bookSeat method
-    private final boolean handleSeatAssignment(Passenger person, SeatType seatType) {
+    private boolean handleSeatAssignment(Passenger person, SeatType seatType) {
         switch (seatType) {
             case FIRST_CLASS:
                 if (firstClassSeatsCount < planeType.seatsInFirst) {
@@ -103,14 +123,28 @@ public final class Flight implements UniqueIdInterface, Flights {
         return false;
     }
 
-    public Passenger[] filterPassengers(ApplyFilter<Passenger> filter) {
-        List<Passenger> filteredPassengers = new ArrayList<>();
-        for (Passenger person : passengers) {
-            if (filter.filter(person)) {
-                filteredPassengers.add(person);
-            }
-        }
-        return filteredPassengers.toArray(new Passenger[0]);
+    public List<Passenger> filterPassengers(ApplyFilter<Passenger> filter) {
+        return Arrays.stream(passengers)
+                .filter(filter::filter)
+                .collect(Collectors.toList());
+    }
+
+    public double getFlightDistance() {
+        return flightDistance;
+    }
+
+    public Airport getDepartureLocation() {
+        return departureLocation;
+    }
+
+    public Airport getArrivalLocation() {
+        return arrivalLocation;
+    }
+
+    public static List<Flight> filteredFlights(ApplyFilter<Flight> filter) {
+        return mapFlights.values().stream()
+                .filter(filter::filter)
+                .collect(Collectors.toList());
     }
 
 
@@ -119,13 +153,13 @@ public final class Flight implements UniqueIdInterface, Flights {
 
     //returns true if Flight Object has any availability regardless of SeatType
     @Override
-    public final boolean getSeatsAvailable() {
+    public boolean getSeatsAvailable() {
         return seatsAvailable > 0;
     }
 
     //returns true if there are available Seats for given SeatType
     @Override
-    public final boolean getSeatsAvailable(SeatType seatType) {
+    public boolean getSeatsAvailable(SeatType seatType) {
         switch (seatType) {
             case FIRST_CLASS:
                 return firstClassSeatsCount < planeType.seatsInFirst;
@@ -141,7 +175,7 @@ public final class Flight implements UniqueIdInterface, Flights {
 
     //adds a Passenger to the Flight Object Passenger array and assigns Passenger a Seat based on SeatType
     @Override
-    public final boolean bookSeat(Passenger person, SeatType seatType) throws DuplicateBookingException {
+    public boolean bookSeat(Passenger person, SeatType seatType) throws DuplicateBookingException {
         DuplicateChecker<Passenger> checker = (p, pa) -> {
             for (Passenger passenger : pa) {
                 if (p.equals(passenger)) {
@@ -170,13 +204,13 @@ public final class Flight implements UniqueIdInterface, Flights {
 
     //returns Flight Object's number of Passengers
     @Override
-    public final int getNumPassengers() {
+    public int getNumPassengers() {
         return numPassengers;
     }
 
     //returns Passenger array from Flight Object if array is not empty
     @Override
-    public final Passenger[] getPassengers() throws EmptyPassengerException {
+    public Passenger[] getPassengers() throws EmptyPassengerException {
         if (numPassengers == 0)
             throw new EmptyPassengerException("Flight does not contain any passengers!");
         return passengers;
@@ -184,7 +218,7 @@ public final class Flight implements UniqueIdInterface, Flights {
 
     //returns Flight Object general information as a String
     @Override
-    public final String flightInfo() {
+    public String flightInfo() {
         return String.format(
                 "Flight#: %s\nDeparting from: %s\nArriving to: %s\nNumber of passengers: %d\nPlane: %s %s\nFlight distance: %.2f mi",
                 flightNumber, departureLocation, arrivalLocation, numPassengers, planeType.company, planeType.classification, flightDistance
@@ -197,7 +231,7 @@ public final class Flight implements UniqueIdInterface, Flights {
     
     //returns Flight Object's ID#
     @Override
-    public final int getId() {
+    public int getId() {
         return id;
     }
 
@@ -207,13 +241,13 @@ public final class Flight implements UniqueIdInterface, Flights {
 
     //returns a String of a Flight Object as the Object's "flightNum"
     @Override
-    public final String toString() {
+    public String toString() {
         return "Flight#: " + flightNumber;
     }
 
     //compares 2 Flight Object's by comparing their Object's hashcode
     @Override
-    public final boolean equals(Object obj) {
+    public boolean equals(Object obj) {
         if (obj == this)
             return true;
         if (obj instanceof Flight) {
@@ -225,7 +259,7 @@ public final class Flight implements UniqueIdInterface, Flights {
 
     //Flight Object's hashcode is set to its ID#
     @Override
-    public final int hashCode() {
+    public int hashCode() {
         return this.getId();
     }
     
