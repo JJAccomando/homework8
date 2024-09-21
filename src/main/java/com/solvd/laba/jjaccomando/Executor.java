@@ -4,8 +4,6 @@ import com.solvd.laba.jjaccomando.enums.Airport;
 import com.solvd.laba.jjaccomando.enums.SeatType;
 import com.solvd.laba.jjaccomando.enums.luggagecategories.SpecialItemsLuggage;
 import com.solvd.laba.jjaccomando.exceptions.*;
-//import org.apache.logging.log4j.LogManager;
-//import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -16,9 +14,10 @@ import static java.lang.System.out;
 
 public class Executor {
 
-    //public static Logger logger = LogManager.getLogger();
-
     public static void main(String[] args) throws OversizeBagException, OverLimitException, DuplicateBookingException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException {
+
+        //Reflection: Gather class information
+
         Class<?> c = Class.forName("com.solvd.laba.jjaccomando.Passenger");
         Field[] fields = c.getDeclaredFields();
         Method[] methods = c.getDeclaredMethods();
@@ -52,6 +51,9 @@ public class Executor {
 
         out.println("\nMethod call using reflection: " + method.invoke(instance));
         out.println();
+
+
+        //Object creation and collection stream methods
 
         Boeing737 plane1 = new Boeing737();
         AirbusA320 plane2 = new AirbusA320();
